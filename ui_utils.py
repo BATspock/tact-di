@@ -1,5 +1,8 @@
-from Tkinter import *
-import tkFileDialog
+import tkinter 
+#from Tkinter import *
+from tkinter import filedialog
+from tkinter import *
+#import tkFileDialog
 import file_paths as file
 import color_conversion_utils as color_converter
 import image_properties as prop
@@ -48,7 +51,7 @@ def assign_height_to_colors(distinct_colors):
 def browse_image():
     root = Tk()
     def browsefunc():
-        filename = tkFileDialog.askopenfilename(initialdir="/", title="Select file")
+        filename = filedialog.askopenfilename(initialdir="/", title="Select file")
         pathlabel.config(text=filename)
         file.set_image_path(filename)
         root.destroy()

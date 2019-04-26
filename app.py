@@ -4,7 +4,8 @@ import os
 import colored_images
 import hatching
 import requests
-
+import warnings
+warnings.filterwarnings("ignore")
 app = Flask(__name__, static_folder='static')
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -19,7 +20,7 @@ def index():
 @app.route("/chooseModel", methods=["POST"])
 def upload():
     global IMG_URL
-    folder_name = 'files\images'
+    folder_name = 'files/images/'
     target = os.path.join(APP_ROOT, folder_name)
     if not os.path.isdir(target):
         os.mkdir(target)
@@ -34,7 +35,7 @@ def upload():
         else:
             img = request.files.getlist("file")[0]
             filename = img.filename
-            IMG_URL = "\\".join([target, filename])
+            IMG_URL = "/".join([target, filename])
             img.save(IMG_URL)
     else:
         flash('Drop an image in the drop area first.')
@@ -67,8 +68,9 @@ def download_hatching():
 
 @app.route('/static/stl_files/<path:filename>', methods=['GET', 'POST'])
 def download(filename):
-    return send_from_directory(directory='static/stl_files', filename=filename)
+    return send_from_directory(directory='static/stl_files/', filename=filename)
 
 
 if __name__ == '__main__':
-    app.run()
+    app.debug = True
+    app.run(host='0.0.0.0', port= 5000)

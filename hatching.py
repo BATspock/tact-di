@@ -3,16 +3,46 @@ from skimage import measure
 import cv2
 from stl import mesh
 from skimage.filters import threshold_otsu
+import PIL.Image, PIL.ImageTk
+import tkinter
+
 
 import file_utils
 import file_paths as file
 import image_properties as prop
 from preprocess import preprocess
 
+import color_conversion_utils as color_converter
+import color_extraction_utils as color_extractor
+import ui_utils_hatching as ui
+import file_utils
+import file_paths as file
+import image_properties as prop
+from texton_color_utils import Textons
+
+def get_gray_value_from_color(pixel, distinct_colors):
+    gray_value = 0
+    matching_color = color_extractor.get_matching_color(pixel, distinct_colors)
+    if matching_color is not None:
+        gray_value = prop.get_height_map()[matching_color]*0.1
+    return gray_value
+
+def convert_from_colored_to_gray(image, distinct_colors):
+    rows = image.shape[0]
+    cols = image.shape[1]
+    gray_image = np.zeros((rows, cols)).astype('float32')
+    for i in range(0, rows):
+        for j in range(0, cols):
+            pixel_val = tuple(image[i, j, :].astype('int'))
+            gray_image[i][j] = get_gray_value_from_color(pixel_val, distinct_colors)
+    return gray_image
+
+    
 
 def convertHatchedImageToSTL(imageurl):
     image = cv2.imread(imageurl)
 
+    ''''
     # generate copy of original image
     im1 = image.copy()
     # decrease contrast to emboss lines
@@ -42,6 +72,37 @@ def convertHatchedImageToSTL(imageurl):
     # Normalize all pixels to assume values from 0 to 1
     gray_image = gray_image / 255.0
     gray_image = np.subtract(1.0, gray_image)
+
+    # Find the threshold to separate foreground from background using OTSU's thresholding method
+    threshold = threshold_otsu(gray_image)
+    (rows, cols) = gray_image.shape
+    '''
+    textons = Textons(image, 3, 10, 1)
+    tex = textons.textons()
+    show = np.zeros_like(image)
+    colors = np.unique(tex)
+    show[tex == colors[1]] = [0,0,255]
+    show[tex == colors[2]] = [0,255,255]
+    show = cv2.medianBlur(show,5)
+
+    cv2.imwrite('temp.jpg', show)
+
+    distinct_colors = color_extractor.get_top_colors_hsv(show, 10)
+
+    ui.assign_height_to_colors(distinct_colors, 'temp.jpg')
+
+    hsv_image = color_converter.get_hsv_from_bgr_image(show)
+    gray_image = convert_from_colored_to_gray(hsv_image, distinct_colors)
+
+    gray_image = cv2.medianBlur(gray_image, 3)
+
+    # Perform 'closing' morphological operation on the image
+    kernel = np.ones((1, 1), np.uint8)
+    gray_image = cv2.morphologyEx(gray_image, cv2.MORPH_CLOSE, kernel)
+
+    # Figure out the scaling parameter according to original size and then scale
+    scale = prop.get_scaling_factor()
+    gray_image = cv2.resize(gray_image, (0, 0), fx=scale, fy=scale)
 
     # Find the threshold to separate foreground from background using OTSU's thresholding method
     threshold = threshold_otsu(gray_image)

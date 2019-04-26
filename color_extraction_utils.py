@@ -27,11 +27,12 @@ def deduplicate_entries(colors_map, top_colors_limit, total_number_of_pixels):
     top_colors[(0, 0, 0)] = 0
     for color in colors_map:
         matching_color = get_matching_color(color, top_colors.keys())
+        print(matching_color)
         if matching_color is None:
             top_colors[color] = colors_map[color]
         else:
             top_colors[matching_color] += colors_map[color]
-    top_colors_filtered = {k: v for k, v in top_colors.iteritems() if v/float(total_number_of_pixels)*100 > 0.1}
+    top_colors_filtered = {k: v for k, v in top_colors.items() if v/float(total_number_of_pixels)*100 > 0.1}
     top_colors_sorted = sorted(top_colors_filtered, key=top_colors_filtered.get, reverse=True)
     return top_colors_sorted[0:top_colors_limit]
 

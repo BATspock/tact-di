@@ -20,8 +20,8 @@ def get_hsv_from_bgr_image(bgr_image):
 
 def get_hsv_from_bgr_pixel(pixel):
     pixel_arr = [pixel[2], pixel[1], pixel[0]]
-    rgb = tuple(pixel_arr)
-    rgb_normalized = map(lambda x: x/255.0, rgb)
+    rgb = np.array(pixel_arr)
+    rgb_normalized = rgb/255.0
     hsv_pixel_val = matplotlib.colors.rgb_to_hsv(rgb_normalized)
     hue = int(hsv_pixel_val[0]*360)
     sat = int(hsv_pixel_val[1]*100)

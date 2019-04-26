@@ -1,8 +1,8 @@
 import os
 
 APP_PATH = os.path.dirname(os.path.abspath(__file__))
-output_path = os.path.join(APP_PATH, 'static\stl_files')
-image_path = os.path.join(APP_PATH, 'files\images')
+output_path = os.path.join(APP_PATH, 'static/stl_files/')
+image_path = os.path.join(APP_PATH, 'files/images/')
 
 
 def get_image_path():

@@ -10,6 +10,7 @@ import ui_utils as ui
 import file_utils
 import file_paths as file
 import image_properties as prop
+from texton_color_utils import Textons
 
 
 def convert_from_colored_to_gray(image, distinct_colors):
@@ -33,6 +34,13 @@ def get_gray_value_from_color(pixel, distinct_colors):
 
 def convertColoredImageToSTL(imageurl):
     image = cv2.imread(imageurl)
+
+    #textons = Textons(image, 3, 10, 1)
+    #tex = textons.textons()
+    #show = np.zeros_like(tex)
+    #show[image == 127] = [0,0,255]
+    #show[image == 255] = [0,255,255]
+    #show = cv2.medianBlur(show,5)
 
     distinct_colors = color_extractor.get_top_colors_hsv(image, 10)
 

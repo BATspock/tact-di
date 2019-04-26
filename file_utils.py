@@ -8,4 +8,4 @@ def save_mesh_to_file(image_path, mesh):
     print(filename)
     if not os.path.isdir(file.output_path):
         os.mkdir(file.output_path)
-    mesh.save(file.output_path + '\\\\' + 'edited-image' + '.stl')
+    mesh.save(file.output_path + '/' + 'edited-image' + '.stl')
